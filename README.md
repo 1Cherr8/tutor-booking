@@ -1,104 +1,268 @@
+
 # Tutor Booking
 
-Учебный full-stack проект: запись клиентов на занятия.
+Tutor Booking — учебное full-stack веб-приложение для записи клиентов на индивидуальные занятия.
 
-## Что выполнено
+В системе предусмотрены две роли:
 
-- 60 use cases, из них 20 отмечены как MVP;
-- роли `client` и `admin`;
-- JWT-авторизация;
-- 2 бизнес-сущности с CRUD: `Subject` и `Booking`;
-- Backend: FastAPI + SQLAlchemy;
-- Database: PostgreSQL;
-- UI: React + Vite + Nginx;
-- всё запускается через Docker Compose.
+- `client` — обычный пользователь;
+- `admin` — администратор.
 
-## Быстрый запуск
+Проект включает пользовательский интерфейс, серверную часть, базу данных, авторизацию и две бизнес-сущности с полным набором CRUD-операций.
 
-1. Установить Docker Desktop.
-2. Открыть терминал в корне проекта.
-3. Выполнить:
+## Возможности
+
+### Client
+
+Клиент может:
+
+- зарегистрироваться;
+- авторизоваться;
+- просматривать доступные предметы;
+- создавать запись на занятие;
+- просматривать свои записи;
+- изменять свои записи;
+- удалять свои записи.
+
+### Admin
+
+Администратор может:
+
+- авторизоваться;
+- просматривать все предметы;
+- создавать предметы;
+- изменять предметы;
+- удалять предметы;
+- просматривать записи всех клиентов;
+- изменять записи;
+- удалять записи.
+
+## Скриншоты
+
+### Авторизация
+
+![Страница авторизации](docs/images/login.png)
+
+### Панель администратора
+
+![Панель администратора](docs/images/admin.png)
+
+### Кабинет клиента
+
+![Кабинет клиента](docs/images/client.png)
+
+## Используемые технологии
+
+### Frontend
+
+- React
+- Vite
+- Nginx
+
+### Backend
+
+- Python
+- FastAPI
+- SQLAlchemy
+- JWT
+
+### Database
+
+- PostgreSQL
+
+### Контейнеризация
+
+- Docker
+- Docker Compose
+
+## Архитектура
+
+Приложение состоит из трёх основных компонентов:
+
+```text
+Пользователь
+     │
+     ▼
+Frontend
+React + Nginx
+     │
+     ▼
+Backend
+FastAPI
+     │
+     ▼
+Database
+PostgreSQL
+```
+
+Каждый компонент запускается в отдельном Docker-контейнере.
+
+В `docker-compose.yml` определены:
+
+- `frontend`;
+- `backend`;
+- `db`.
+
+## Бизнес-сущности
+
+В проекте реализованы две основные бизнес-сущности.
+
+### Subject
+
+Предмет или услуга репетитора.
+
+Поддерживаются операции:
+
+- CREATE;
+- READ;
+- UPDATE;
+- DELETE.
+
+Создание, изменение и удаление предметов доступно администратору.
+
+### Booking
+
+Запись клиента на занятие.
+
+Поддерживаются операции:
+
+- CREATE;
+- READ;
+- UPDATE;
+- DELETE.
+
+Клиент работает со своими записями, а администратор может работать со всеми записями.
+
+## Авторизация
+
+В проекте используется JWT-авторизация.
+
+Поддерживаются две роли:
+
+```text
+client
+admin
+```
+
+Права доступа проверяются на стороне backend.
+
+## Запуск проекта
+
+Для запуска необходим Docker Desktop.
+
+В корневой папке проекта выполнить:
 
 ```bash
 docker compose up --build
 ```
 
-4. Открыть:
-   - UI: http://localhost:3000
-   - Swagger API: http://localhost:8000/docs
+После запуска приложение доступно по адресам:
 
-### Тестовый администратор
+### Web-интерфейс
 
-- Email: `admin@example.com`
-- Password: `admin12345`
+```text
+http://localhost:3000
+```
 
-Обычного клиента можно зарегистрировать через интерфейс.
+### Swagger API
 
-## Остановка
+```text
+http://localhost:8000/docs
+```
+
+## Тестовый администратор
+
+```text
+Email: admin@example.com
+Password: admin12345
+```
+
+Обычного пользователя можно зарегистрировать через интерфейс приложения.
+
+## Остановка проекта
+
+Для остановки:
 
 ```bash
 docker compose down
 ```
 
-Удалить контейнеры вместе с данными PostgreSQL:
-
-```bash
-docker compose down -v
-```
-
-## Структура
+## Структура проекта
 
 ```text
 tutor-booking/
-├── backend/              # FastAPI сервер
+├── backend/
 │   ├── app/
-│   │   ├── routers/      # REST endpoints
-│   │   ├── auth.py       # JWT и роли
-│   │   ├── database.py   # подключение к PostgreSQL
-│   │   ├── models.py     # модели БД
-│   │   ├── schemas.py    # схемы API
-│   │   └── main.py       # запуск приложения
-│   └── Dockerfile
-├── frontend/             # React UI
-│   ├── src/
+│   │   ├── routers/
+│   │   │   ├── auth_router.py
+│   │   │   ├── bookings.py
+│   │   │   └── subjects.py
+│   │   ├── auth.py
+│   │   ├── database.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   └── schemas.py
 │   ├── Dockerfile
-│   └── nginx.conf
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── main.jsx
+│   │   └── styles.css
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── package.json
+│
 ├── docs/
-│   ├── use-cases.md
-│   └── project-description.md
+│   ├── images/
+│   ├── project-description.md
+│   └── use-cases.md
+│
 ├── docker-compose.yml
+├── .gitignore
 └── README.md
 ```
 
-## CRUD API
+## API
 
 ### Subjects
 
-- `GET /subjects`
-- `GET /subjects/{id}`
-- `POST /subjects` — admin
-- `PUT /subjects/{id}` — admin
-- `DELETE /subjects/{id}` — admin
+```text
+GET    /subjects
+GET    /subjects/{id}
+POST   /subjects
+PUT    /subjects/{id}
+DELETE /subjects/{id}
+```
 
 ### Bookings
 
-- `GET /bookings`
-- `GET /bookings/{id}`
-- `POST /bookings`
-- `PUT /bookings/{id}`
-- `DELETE /bookings/{id}`
-
-## Git / GitHub
-
-После создания пустого репозитория на GitHub:
-
-```bash
-git init
-git add .
-git commit -m "Initial MVP"
-git branch -M main
-git remote add origin https://github.com/USERNAME/tutor-booking.git
-git push -u origin main
+```text
+GET    /bookings
+GET    /bookings/{id}
+POST   /bookings
+PUT    /bookings/{id}
+DELETE /bookings/{id}
 ```
 
-Заменить `USERNAME` на свой логин GitHub.
+## Use Cases и MVP
+
+Для проекта сформировано:
+
+```text
+60 Use Cases
+```
+
+Из них:
+
+```text
+20 MVP
+```
+
+Полный список находится в:
+
+[`docs/use-cases.md`](docs/use-cases.md)
+
+Подробное описание проекта находится в:
+
+[`docs/project-description.md`](docs/project-description.md)
